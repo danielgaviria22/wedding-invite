@@ -38,7 +38,7 @@ export async function sendFormData(request: NextRequest) {
     }
 
     try {
-      const response = await sheets.spreadsheets.values.append({
+      await sheets.spreadsheets.values.append({
         spreadsheetId,
         range: "Hoja1!A:B",
         valueInputOption: "RAW",
