@@ -1,4 +1,5 @@
 import { LocationMap } from "@/components/LocationMap";
+import Form from "@/components/RSVP/Form";
 
 export default function Home() {
   return (
@@ -7,6 +8,7 @@ export default function Home() {
         link={process.env.NEXT_PUBLIC_LOCATION_URL || ""}
         className="w-full h-96"
       />
+      <Form />
     </div>
   );
 }
