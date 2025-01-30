@@ -1,16 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { google } from "googleapis";
 
-type TFormData = {
-  name: string;
-  attendance: string;
-};
+import { TInviteData } from "@/types/invite.types";
 
-export async function sendFormData(request: NextRequest) {
-  if (request.method === "POST") {
-    const body = await request.json();
-    const { name, attendance }: TFormData = body;
-
+export async function getInviteData(request: NextRequest) {
+  if (request.method === "GET") {
     const credentials = process.env.GOOGLE_API_CREDENTIALS;
 
     if (!credentials) {
@@ -38,20 +32,36 @@ export async function sendFormData(request: NextRequest) {
     }
 
     try {
-      await sheets.spreadsheets.values.append({
+      const searchParams = request.nextUrl.searchParams;
+      const inviteId = searchParams.get("id");
+      if (!inviteId) {
+        return NextResponse.json(
+          { message: "Invite ID is required" },
+          { status: 500 }
+        );
+      }
+      const invitationsData = await sheets.spreadsheets.values.get({
         spreadsheetId,
-        range: "Hoja1!A:B",
-        valueInputOption: "RAW",
-        requestBody: {
-          values: [[name, attendance]],
-        },
+        range: `Hoja2!A:C`,
       });
-      return NextResponse.json({ message: "Success" }, { status: 200 });
-    } catch (error) {
-      console.error("Error sending data to Google Sheets:", error);
+      const inviteData = (invitationsData.data.values || []).filter(
+        (row) => row[0] === inviteId
+      )[0];
       return NextResponse.json(
-        { message: "Error sending data to Google Sheets" },
-        { status: 500 }
+        {
+          data: {
+            id: inviteData[0],
+            invitationRecipient: inviteData[1],
+            numberOfGuests: Number(inviteData[2]),
+          } as TInviteData,
+        },
+        { status: 200 }
+      );
+    } catch (error) {
+      console.error("Error getting data from Google Sheets:", error);
+      return NextResponse.json(
+        { message: "Error getting data from Google Sheets" },
+        { status: 404 }
       );
     }
   } else {
