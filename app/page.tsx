@@ -6,7 +6,7 @@ import { TInviteData } from "@/types/invite.types";
 export default async function Home({
   searchParams,
 }: {
-  searchParams: { id?: string };
+  searchParams: Promise<{ id?: string }>;
 }) {
   const { id: inviteId } = await searchParams;
   if (!inviteId) {
