@@ -3,13 +3,13 @@ import { google } from "googleapis";
 
 type TFormData = {
   name: string;
-  attendance: string;
+  transport: string;
 };
 
 export async function sendFormData(request: NextRequest) {
   if (request.method === "POST") {
     const body = await request.json();
-    const { name, attendance }: TFormData = body;
+    const { name, transport }: TFormData = body;
 
     const credentials = process.env.GOOGLE_API_CREDENTIALS;
 
@@ -43,7 +43,7 @@ export async function sendFormData(request: NextRequest) {
         range: "Hoja1!A:B",
         valueInputOption: "RAW",
         requestBody: {
-          values: [[name, attendance]],
+          values: [[name, transport]],
         },
       });
       return NextResponse.json({ message: "Success" }, { status: 200 });

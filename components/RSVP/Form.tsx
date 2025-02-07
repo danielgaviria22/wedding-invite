@@ -1,23 +1,26 @@
 "use client";
 
 import React, { useState } from "react";
+import { Input } from "../Input";
+import { Select } from "../Select";
 
-interface FormValues {
+type FormValues = {
   name: string;
-  attendance: string;
-}
+  transport: string;
+};
+
 const Form: React.FC = () => {
   const [formValues, setFormValues] = useState<FormValues>({
     name: "",
-    attendance: "Yes",
+    transport: "",
   });
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormValues((prevValues) => ({ ...prevValues, [name]: value }));
-  };
+  const handleChange =
+    (fieldName: string) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      const { value } = e.target;
+      setFormValues((prevValues) => ({ ...prevValues, [fieldName]: value }));
+    };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -32,32 +35,30 @@ const Form: React.FC = () => {
 
     const result = await res.json();
     alert(result.message);
-    setFormValues({ name: "", attendance: "Yes" });
+    setFormValues({ name: "", transport: "" });
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        Nombre:
-        <input
-          type="text"
-          name="name"
-          value={formValues.name}
-          onChange={handleChange}
-          required
-        />
-      </label>
-      <label>
-        ¿Asistirás?
-        <select
-          name="attendance"
-          value={formValues.attendance}
-          onChange={handleChange}
-        >
-          <option value="Yes">Sí</option>
-          <option value="No">No</option>
-        </select>
-      </label>
+    <form onSubmit={handleSubmit} className="bg-beige">
+      <Input
+        label="Nombre Completo"
+        type="text"
+        value={formValues.name}
+        onChange={handleChange("name")}
+        required
+      />
+      <Select
+        label="Transporte al evento"
+        value={formValues.transport}
+        onChange={(value) =>
+          setFormValues((prevValues) => ({ ...prevValues, transport: value }))
+        }
+        options={[
+          { value: "Por mi cuenta", label: "Por mi cuenta" },
+          { value: "Necesito Ayuda", label: "Necesito Ayuda" },
+        ]}
+        required
+      />
       <button type="submit">Enviar</button>
     </form>
   );
