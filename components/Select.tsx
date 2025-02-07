@@ -15,7 +15,6 @@ export const Select: React.FC<SelectProps> = ({
   onChange,
   options,
   className,
-  required = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
