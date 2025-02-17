@@ -29,7 +29,7 @@ export const Input: React.FC<InputProps> = ({
         onChange={onChange}
         required={required}
         placeholder={placeholder}
-        className="w-full bg-transparent border-b p-2 border-red-main text-red-main focus:outline-none"
+        className="w-full bg-transparent border-b p-2 border-red-main text-red-main focus:outline-none placeholder:text-red-main"
       />
     </div>
   );

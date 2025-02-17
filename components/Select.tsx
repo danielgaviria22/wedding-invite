@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 
 type SelectProps = {
   label: string;
@@ -17,6 +18,26 @@ export const Select: React.FC<SelectProps> = ({
   className,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const selectRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        selectRef.current &&
+        !selectRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
 
   const toggleDropdown = () => setIsOpen(!isOpen);
   const handleOptionClick = (optionValue: string) => {
@@ -24,12 +45,15 @@ export const Select: React.FC<SelectProps> = ({
     setIsOpen(false);
   };
   return (
-    <div className={`mb-6 ${className}`}>
+    <div
+      ref={selectRef}
+      className={`relative mb-6 w-full max-w-3xl ${className}`}
+    >
       <label className="block text-sm mb-2 text-red-main" htmlFor={label}>
         {label}
       </label>
       <div
-        className="relative text-red-main border-b border-red-main cursor-pointer p-2"
+        className="text-red-main border-b border-red-main cursor-pointer p-2"
         onClick={toggleDropdown}
       >
         <span>{value || "No seleccionado"}</span>
@@ -38,11 +62,11 @@ export const Select: React.FC<SelectProps> = ({
             isOpen ? "-rotate-90" : ""
           }`}
         >
-          ▼
+          <Image src="/icons/arrow-down.svg" alt="▼" className="py-2" />
         </span>
       </div>
       {isOpen && (
-        <div className="absolute z-10 w-full bg-beige text-red-main border-t border-r-2 border-b-2 border-l border-red-main shadow-lg mt-1">
+        <div className="absolute z-10 w-full max-h-96 overflow-y-auto bg-beige text-red-main border-t border-r-2 border-b-2 border-l border-red-main shadow-lg mt-1">
           {options.map((option) => (
             <div
               key={option.value}

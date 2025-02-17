@@ -30,7 +30,10 @@ export default async function Home({
         link={process.env.NEXT_PUBLIC_LOCATION_URL || ""}
         className="w-full h-96"
       />
-      <Form />
+      <Form
+        numberOfGuests={inviteData.numberOfGuests}
+        inviteId={inviteData.id}
+      />
     </div>
   );
 }
