@@ -38,7 +38,7 @@ export const ConfirmedCard: React.FC<TConfirmedCardProps> = ({
           onClick={onEdit}
           className="absolute -top-2.5 -right-2.5"
         >
-          <Image src="/icons/edit.svg" alt="Edit" />
+          <Image src="/icons/edit.svg" width="32" height="32" alt="Edit" />
         </button>
       )}
     </article>

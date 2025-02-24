@@ -62,7 +62,13 @@ export const Select: React.FC<SelectProps> = ({
             isOpen ? "-rotate-90" : ""
           }`}
         >
-          <Image src="/icons/arrow-down.svg" alt="▼" className="py-2" />
+          <Image
+            src="/icons/arrow-down.svg"
+            alt="▼"
+            width={13}
+            height={7}
+            className="py-2"
+          />
         </span>
       </div>
       {isOpen && (

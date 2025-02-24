@@ -12,3 +12,12 @@ export type TGuestInfo = {
   food: string;
   drink: string;
 };
+
+export type TGuestValidation = {
+  name: boolean;
+  phone: boolean;
+  email: boolean;
+  transport: boolean;
+  food: boolean;
+  drink: boolean;
+};

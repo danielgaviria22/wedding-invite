@@ -1,36 +1,19 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Input } from "../Input";
 import { Select } from "../Select";
 import { ConfirmedCard } from "./ConfirmedCard";
 import { TGuestInfo } from "@/types/invite.types";
-
-const foodRestriction = [
-  { value: "Ninguna", label: "Ninguna" },
-  { value: "Vegano", label: "Vegeno" },
-  { value: "Vegetariano", label: "Vegetariano" },
-  { value: "Otra", label: "Otra" },
-];
-
-const drinkOptions = [
-  { value: "Whiskey", label: "Whiskey" },
-  { value: "Vino", label: "Vino" },
-  { value: "Cocktail", label: "Cocktail" },
-  { value: "Cerveza", label: "Cerveza" },
-  { value: "Tequila", label: "Tequila" },
-  { value: "Vodka", label: "Vodka" },
-  { value: "No Alcoholica", label: "No Alcoholica" },
-];
-
-const defaultFormValue = {
-  name: "",
-  phone: "",
-  email: "",
-  transport: "",
-  food: "",
-  drink: "",
-};
+import {
+  FOOD_RESTRICTION,
+  DRINK_OPTIONS,
+  DEFAULT_FORM_VALUE,
+  BUTTON_OUTLINE_CLASSES,
+  BUTTON_PRIMARY_CLASSES,
+} from "./utils/constants";
+import { Switch } from "../Switch";
+import { isValidGuestInfo, validateGuestInfo } from "./utils/form";
 
 type TFormProps = {
   numberOfGuests: number;
@@ -39,10 +22,21 @@ type TFormProps = {
 
 const Form: React.FC<TFormProps> = ({ numberOfGuests, inviteId }) => {
   const [confirmedGuests, setConfirmedGuests] = useState<Array<TGuestInfo>>([]);
-  const [formValues, setFormValues] = useState<TGuestInfo>(defaultFormValue);
+  const [formValues, setFormValues] = useState<TGuestInfo>(DEFAULT_FORM_VALUE);
+  const [isAddNewOpen, setIsAddNewOpen] = useState(true);
+
+  //const [isLoading, setIsLoading] = useState(false);
+  //const [wasSending, setWasSending] = useState(false);
+  const [isCustomPreferenceChecked, setIsCustomPreferenceChecked] =
+    useState(false);
+
+  const isFormCompleted = useMemo(
+    () => confirmedGuests.length === numberOfGuests,
+    [confirmedGuests.length, numberOfGuests]
+  );
 
   const resetForm = () => {
-    setFormValues(defaultFormValue);
+    setFormValues(DEFAULT_FORM_VALUE);
   };
 
   const handleChange =
@@ -53,9 +47,29 @@ const Form: React.FC<TFormProps> = ({ numberOfGuests, inviteId }) => {
     };
 
   const handleConfirm = () => {
-    if (confirmedGuests.length < numberOfGuests) {
+    if (confirmedGuests.length >= numberOfGuests) {
+      return;
+    }
+    const validatedInfo = validateGuestInfo(formValues);
+    if (isValidGuestInfo(validatedInfo)) {
       setConfirmedGuests((prevValues) => [...prevValues, formValues]);
+      setIsAddNewOpen(false);
       resetForm();
+      return;
+    }
+  };
+
+  const handleAddNewGuest = () => {
+    setIsAddNewOpen(true);
+    const previousGuestInfo = confirmedGuests[confirmedGuests.length - 1];
+    if (previousGuestInfo) {
+      setIsCustomPreferenceChecked(false);
+      setFormValues((value) => ({
+        ...value,
+        drink: previousGuestInfo.drink,
+        transport: previousGuestInfo.transport,
+        food: previousGuestInfo.food,
+      }));
     }
   };
 
@@ -89,74 +103,119 @@ const Form: React.FC<TFormProps> = ({ numberOfGuests, inviteId }) => {
         </p>
         {confirmedGuests.map((guest) => (
           <ConfirmedCard
-            key={guest.email}
+            key={guest.name}
             guestInfo={guest}
             editable
             onEdit={() => {}}
           />
         ))}
-        <h3 className="font-medium mb-4">Información Invitado</h3>
-        <Input
-          label="Nombre Completo"
-          type="text"
-          value={formValues.name}
-          placeholder="-"
-          onChange={handleChange("name")}
-          required
-        />
-        <Input
-          label="Telefono"
-          type="tel"
-          value={formValues.phone}
-          placeholder="-"
-          onChange={handleChange("phone")}
-          required
-        />
-        <Input
-          label="Email"
-          type="email"
-          value={formValues.email}
-          placeholder="-"
-          onChange={handleChange("email")}
-          required
-        />
-        <h3 className="font-medium mb-4 mt-6">Preferencias</h3>
-        <Select
-          label="Transporte al evento"
-          value={formValues.transport}
-          onChange={(value) =>
-            setFormValues((prevValues) => ({ ...prevValues, transport: value }))
-          }
-          options={[
-            { value: "Por mi cuenta", label: "Por mi cuenta" },
-            { value: "Necesito Ayuda", label: "Necesito Ayuda" },
-          ]}
-          required
-        />
-        <Select
-          label="Preferencias alimenticias"
-          value={formValues.food}
-          onChange={(value) =>
-            setFormValues((prevValues) => ({ ...prevValues, food: value }))
-          }
-          options={foodRestriction}
-          required
-        />
-        <Select
-          label="Preferencias de bebidas"
-          value={formValues.drink}
-          onChange={(value) =>
-            setFormValues((prevValues) => ({ ...prevValues, drink: value }))
-          }
-          options={drinkOptions}
-          required
-        />
-        {confirmedGuests.length < numberOfGuests && (
-          <button type="button" onClick={handleConfirm}>
+        {isAddNewOpen && (
+          <>
+            <h3 className="font-medium mb-4">Información Invitado</h3>
+            <Input
+              label="Nombre Completo"
+              type="text"
+              value={formValues.name}
+              placeholder="-"
+              onChange={handleChange("name")}
+              required
+            />
+            <Input
+              label="Telefono"
+              type="tel"
+              value={formValues.phone}
+              placeholder="-"
+              onChange={handleChange("phone")}
+              required
+            />
+            <Input
+              label="Email"
+              type="email"
+              value={formValues.email}
+              placeholder="-"
+              onChange={handleChange("email")}
+              required
+            />
+            {confirmedGuests.length > 0 && (
+              <Switch
+                onToggle={(checked) => setIsCustomPreferenceChecked(checked)}
+                isChecked={isCustomPreferenceChecked}
+              >
+                Personaliza las preferencias
+              </Switch>
+            )}
+            <div className="mt-6">
+              {(confirmedGuests.length === 0 || isCustomPreferenceChecked) && (
+                <>
+                  <h3 className="font-medium mb-4">Preferencias</h3>
+                  <Select
+                    label="Transporte al evento"
+                    value={formValues.transport}
+                    onChange={(value) =>
+                      setFormValues((prevValues) => ({
+                        ...prevValues,
+                        transport: value,
+                      }))
+                    }
+                    options={[
+                      { value: "Por mi cuenta", label: "Por mi cuenta" },
+                      { value: "Necesito Ayuda", label: "Necesito Ayuda" },
+                    ]}
+                    required
+                  />
+                  <Select
+                    label="Preferencias alimenticias"
+                    value={formValues.food}
+                    onChange={(value) =>
+                      setFormValues((prevValues) => ({
+                        ...prevValues,
+                        food: value,
+                      }))
+                    }
+                    options={FOOD_RESTRICTION}
+                    required
+                  />
+                  <Select
+                    label="Preferencias de bebidas"
+                    value={formValues.drink}
+                    onChange={(value) =>
+                      setFormValues((prevValues) => ({
+                        ...prevValues,
+                        drink: value,
+                      }))
+                    }
+                    options={DRINK_OPTIONS}
+                    required
+                  />
+                </>
+              )}
+            </div>
+          </>
+        )}
+
+        {!isFormCompleted && !isAddNewOpen && (
+          <button
+            type="button"
+            className={BUTTON_OUTLINE_CLASSES}
+            onClick={handleAddNewGuest}
+          >
+            Añadir otro invitado
+          </button>
+        )}
+        {confirmedGuests.length < numberOfGuests && isAddNewOpen && (
+          <button
+            type="button"
+            className={BUTTON_PRIMARY_CLASSES}
+            onClick={handleConfirm}
+          >
             Confirmar
           </button>
         )}
-        {confirmedGuests.length > 0 && <button type="submit">Enviar</button>}
+        {confirmedGuests.length > 0 && !isAddNewOpen && (
+          <button type="submit" className={BUTTON_PRIMARY_CLASSES}>
+            Enviar
+          </button>
+        )}
       </form>
     </section>
   );
