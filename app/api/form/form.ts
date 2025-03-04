@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { google } from "googleapis";
-
-type TFormData = {
-  name: string;
-  transport: string;
-};
+import { TGuestInfo } from "@/types/invite.types";
 
 export async function sendFormData(request: NextRequest) {
   if (request.method === "POST") {
     const body = await request.json();
-    const { name, transport }: TFormData = body;
+    const { guests: data }: { guests: Array<TGuestInfo> } = body;
 
     const credentials = process.env.GOOGLE_API_CREDENTIALS;
 
@@ -38,12 +34,13 @@ export async function sendFormData(request: NextRequest) {
     }
 
     try {
+      const parsedData = data.map((guest: TGuestInfo) => Object.values(guest));
       await sheets.spreadsheets.values.append({
         spreadsheetId,
-        range: "Hoja1!A:B",
+        range: "Hoja1!A:F",
         valueInputOption: "RAW",
         requestBody: {
-          values: [[name, transport]],
+          values: parsedData,
         },
       });
       return NextResponse.json({ message: "Success" }, { status: 200 });

@@ -24,9 +24,11 @@ const Form: React.FC<TFormProps> = ({ numberOfGuests, inviteId }) => {
   const [confirmedGuests, setConfirmedGuests] = useState<Array<TGuestInfo>>([]);
   const [formValues, setFormValues] = useState<TGuestInfo>(DEFAULT_FORM_VALUE);
   const [isAddNewOpen, setIsAddNewOpen] = useState(true);
+  const [guestNumber, setGuestNumber] = useState<number>(-1);
+  const [customFoodPreference, setCustomFoodPreference] = useState("");
 
-  //const [isLoading, setIsLoading] = useState(false);
-  //const [wasSending, setWasSending] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [wasSending, setWasSending] = useState(false);
   const [isCustomPreferenceChecked, setIsCustomPreferenceChecked] =
     useState(false);
 
@@ -35,8 +37,16 @@ const Form: React.FC<TFormProps> = ({ numberOfGuests, inviteId }) => {
     [confirmedGuests.length, numberOfGuests]
   );
 
+  const showConfirmButton = useMemo(
+    () =>
+      (confirmedGuests.length < numberOfGuests && isAddNewOpen) ||
+      guestNumber >= 0,
+    [confirmedGuests.length, numberOfGuests, isAddNewOpen, guestNumber]
+  );
+
   const resetForm = () => {
     setFormValues(DEFAULT_FORM_VALUE);
+    setCustomFoodPreference("");
   };
 
   const handleChange =
@@ -47,15 +57,27 @@ const Form: React.FC<TFormProps> = ({ numberOfGuests, inviteId }) => {
     };
 
   const handleConfirm = () => {
-    if (confirmedGuests.length >= numberOfGuests) {
+    if (confirmedGuests.length >= numberOfGuests && guestNumber < 0) {
       return;
     }
-    const validatedInfo = validateGuestInfo(formValues);
+    const updatedValues = {
+      ...formValues,
+      food: formValues.food === "Otra" ? customFoodPreference : formValues.food,
+    };
+    const validatedInfo = validateGuestInfo(updatedValues);
     if (isValidGuestInfo(validatedInfo)) {
-      setConfirmedGuests((prevValues) => [...prevValues, formValues]);
+      if (guestNumber < 0) {
+        setConfirmedGuests((prevValues) => [...prevValues, updatedValues]);
+        setIsAddNewOpen(false);
+        resetForm();
+        return;
+      }
+      const newConfirmedGuest = confirmedGuests;
+      newConfirmedGuest[guestNumber] = updatedValues;
+      setConfirmedGuests(newConfirmedGuest);
       setIsAddNewOpen(false);
+      setGuestNumber(-1);
       resetForm();
-      return;
     }
   };
 
@@ -73,19 +95,32 @@ const Form: React.FC<TFormProps> = ({ numberOfGuests, inviteId }) => {
     }
   };
 
+  const handleEdit = (index: number) => () => {
+    setGuestNumber(index);
+    setIsAddNewOpen(true);
+    setFormValues(confirmedGuests[index]);
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsLoading(true);
 
     const res = await fetch("/api/form", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(formValues),
+      body: JSON.stringify({ guests: confirmedGuests, invite: inviteId }),
     });
 
     const result = await res.json();
-    alert(`${result.message} ${inviteId}`);
+    setIsLoading(false);
+    if (result.message === "Success") {
+      alert(`Su confirmación ha sido enviada con éxito`);
+      setWasSending(true);
+    } else {
+      alert(`Upps. Ha ocurrido un error. Vuelva a intentar en unos minutos`);
+    }
     resetForm();
   };
 
@@ -96,17 +131,21 @@ const Form: React.FC<TFormProps> = ({ numberOfGuests, inviteId }) => {
         className="w-full max-w-3xl px-10 pt-20 pb-60"
       >
         <h2 className="text-2xl text-center w-80 leading-5 mx-auto mb-10">
-          ¡Queremos confirmar tu asistencia!
+          {wasSending
+            ? "¡Gracias por confirmar tu asistencia!"
+            : "¡Queremos confirmar tu asistencia!"}
         </h2>
         <p className="text-center w-80 mx-auto leading-5 mb-10">
-          Ayúdanos rellenando el siguiente formulario.
+          {wasSending
+            ? "Estamos emocionados por compartir este momento especial con:"
+            : "Ayúdanos rellenando el siguiente formulario."}
         </p>
-        {confirmedGuests.map((guest) => (
+        {confirmedGuests.map((guest, i) => (
           <ConfirmedCard
             key={guest.name}
             guestInfo={guest}
             editable
-            onEdit={() => {}}
+            onEdit={handleEdit(i)}
           />
         ))}
         {isAddNewOpen && (
@@ -136,7 +175,7 @@ const Form: React.FC<TFormProps> = ({ numberOfGuests, inviteId }) => {
               onChange={handleChange("email")}
               required
             />
-            {confirmedGuests.length > 0 && (
+            {confirmedGuests.length > 0 && guestNumber < 0 && (
               <Switch
                 onToggle={(checked) => setIsCustomPreferenceChecked(checked)}
                 isChecked={isCustomPreferenceChecked}
@@ -145,7 +184,9 @@ const Form: React.FC<TFormProps> = ({ numberOfGuests, inviteId }) => {
               </Switch>
             )}
             <div className="mt-6">
-              {(confirmedGuests.length === 0 || isCustomPreferenceChecked) && (
+              {(confirmedGuests.length === 0 ||
+                guestNumber >= 0 ||
+                isCustomPreferenceChecked) && (
                 <>
                   <h3 className="font-medium mb-4">Preferencias</h3>
                   <Select
@@ -166,15 +207,29 @@ const Form: React.FC<TFormProps> = ({ numberOfGuests, inviteId }) => {
                   <Select
                     label="Preferencias alimenticias"
                     value={formValues.food}
-                    onChange={(value) =>
+                    onChange={(value) => {
                       setFormValues((prevValues) => ({
                         ...prevValues,
                         food: value,
-                      }))
-                    }
+                      }));
+                      // Si el valor seleccionado es "Otra", habilita el campo de entrada
+                      if (value === "Otra") {
+                        setCustomFoodPreference("");
+                      }
+                    }}
                     options={FOOD_RESTRICTION}
                     required
                   />
+                  {formValues.food === "Otra" && (
+                    <Input
+                      label="Especifica tu preferencia"
+                      type="text"
+                      value={customFoodPreference}
+                      onChange={(e) => setCustomFoodPreference(e.target.value)}
+                      placeholder="Ej: Sin gluten, Sin nueces, etc."
+                      required
+                    />
+                  )}
                   <Select
                     label="Preferencias de bebidas"
                     value={formValues.drink}
@@ -202,7 +257,7 @@ const Form: React.FC<TFormProps> = ({ numberOfGuests, inviteId }) => {
             Añadir otro invitado
           </button>
         )}
-        {confirmedGuests.length < numberOfGuests && isAddNewOpen && (
+        {showConfirmButton && (
           <button
             type="button"
             className={BUTTON_PRIMARY_CLASSES}
@@ -211,10 +266,16 @@ const Form: React.FC<TFormProps> = ({ numberOfGuests, inviteId }) => {
             Confirmar
           </button>
         )}
-        {confirmedGuests.length > 0 && !isAddNewOpen && (
+        {confirmedGuests.length > 0 && !isAddNewOpen && !wasSending && (
           <button type="submit" className={BUTTON_PRIMARY_CLASSES}>
-            Enviar
+            {isLoading ? "...Cargando" : "Enviar"}
           </button>
+        )}
+        {wasSending && (
+          <p className="text-center w-80 mx-auto leading-5 mb-10 italic text-sm">
+            Si necesitan algún cambio en la información, pueden comunicarse con
+            nosotros.
+          </p>
         )}
       </form>
     </section>
