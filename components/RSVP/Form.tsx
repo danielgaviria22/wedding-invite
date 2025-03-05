@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Input } from "../Input";
 import { Select } from "../Select";
 import { ConfirmedCard } from "./ConfirmedCard";
@@ -18,9 +18,14 @@ import { isValidGuestInfo, validateGuestInfo } from "./utils/form";
 type TFormProps = {
   numberOfGuests: number;
   inviteId: string;
+  initialGuests: Array<TGuestInfo>;
 };
 
-const Form: React.FC<TFormProps> = ({ numberOfGuests, inviteId }) => {
+const Form: React.FC<TFormProps> = ({
+  numberOfGuests,
+  inviteId,
+  initialGuests,
+}) => {
   const [confirmedGuests, setConfirmedGuests] = useState<Array<TGuestInfo>>([]);
   const [formValues, setFormValues] = useState<TGuestInfo>(DEFAULT_FORM_VALUE);
   const [isAddNewOpen, setIsAddNewOpen] = useState(true);
@@ -48,6 +53,14 @@ const Form: React.FC<TFormProps> = ({ numberOfGuests, inviteId }) => {
     setFormValues(DEFAULT_FORM_VALUE);
     setCustomFoodPreference("");
   };
+
+  useEffect(() => {
+    if (initialGuests.length > 0) {
+      setConfirmedGuests(initialGuests);
+      setIsAddNewOpen(false);
+      setWasSending(true);
+    }
+  }, []);
 
   const handleChange =
     (fieldName: string) =>
@@ -144,7 +157,7 @@ const Form: React.FC<TFormProps> = ({ numberOfGuests, inviteId }) => {
           <ConfirmedCard
             key={guest.name}
             guestInfo={guest}
-            editable
+            editable={!wasSending}
             onEdit={handleEdit(i)}
           />
         ))}

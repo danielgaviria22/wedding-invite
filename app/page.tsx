@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { LocationMap } from "@/components/LocationMap";
 import Form from "@/components/RSVP/Form";
-import { TInviteData } from "@/types/invite.types";
+import { TGuestInfo, TInviteData } from "@/types/invite.types";
 
 export default async function Home({
   searchParams,
@@ -21,6 +21,25 @@ export default async function Home({
   }
 
   const inviteData = (await apiRes.json()).data as TInviteData;
+  const apiRes2 = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/invite-validation?id=${inviteId}`
+  );
+
+  if (!apiRes2.ok) {
+    return notFound();
+  }
+  const reponse = await apiRes2.json();
+
+  const confirmedGuests = reponse.data?.confirmedGuests.map(
+    (guest: Array<string>) => ({
+      name: guest[0],
+      phone: guest[1],
+      email: guest[2],
+      transport: guest[3],
+      food: guest[4],
+      drink: guest[5],
+    })
+  ) as Array<TGuestInfo>;
 
   return (
     <div className="font-[family-name:var(--font-geist-sans)]">
@@ -33,6 +52,7 @@ export default async function Home({
       <Form
         numberOfGuests={inviteData.numberOfGuests}
         inviteId={inviteData.id}
+        initialGuests={confirmedGuests}
       />
     </div>
   );

@@ -1,15 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { google } from "googleapis";
-import { TGuestInfo } from "@/types/invite.types";
 
-export async function sendFormData(request: NextRequest) {
-  if (request.method === "POST") {
-    const body = await request.json();
-    const {
-      guests: data,
-      invite,
-    }: { guests: Array<TGuestInfo>; invite: string } = body;
-
+export async function getInviteValidation(request: NextRequest) {
+  if (request.method === "GET") {
     const credentials = process.env.GOOGLE_API_CREDENTIALS;
 
     if (!credentials) {
@@ -37,24 +30,32 @@ export async function sendFormData(request: NextRequest) {
     }
 
     try {
-      const parsedData = data.map((guest: TGuestInfo) => [
-        ...Object.values(guest),
-        invite,
-      ]);
-      await sheets.spreadsheets.values.append({
+      const searchParams = request.nextUrl.searchParams;
+      const inviteId = searchParams.get("id");
+      if (!inviteId) {
+        return NextResponse.json(
+          { message: "Invite ID is required" },
+          { status: 500 }
+        );
+      }
+      const invitationsData = await sheets.spreadsheets.values.get({
         spreadsheetId,
-        range: "Hoja1!A:G",
-        valueInputOption: "RAW",
-        requestBody: {
-          values: parsedData,
-        },
+        range: `Hoja1!A:G`,
       });
-      return NextResponse.json({ message: "Success" }, { status: 200 });
-    } catch (error) {
-      console.error("Error sending data to Google Sheets:", error);
+      const confirmedGuests = (invitationsData.data.values || []).filter(
+        (id) => id[6] === inviteId
+      );
       return NextResponse.json(
-        { message: "Error sending data to Google Sheets" },
-        { status: 500 }
+        {
+          data: { confirmedGuests },
+        },
+        { status: 200 }
+      );
+    } catch (error) {
+      console.error("Error getting data from Google Sheets:", error);
+      return NextResponse.json(
+        { message: "Error getting data from Google Sheets" },
+        { status: 404 }
       );
     }
   } else {
