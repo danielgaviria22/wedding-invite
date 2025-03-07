@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { TGuestInfo } from "@/types/invite.types";
+import { TGuestInfo, TGuestValidation } from "@/types/invite.types";
 import { isValidGuestInfo, validateGuestInfo } from "../utils/form";
 
-type UseFormStateProps = {
+type TUseFormStateProps = {
   numberOfGuests: number;
   inviteId: string;
   initialGuests: Array<TGuestInfo>;
@@ -21,7 +21,7 @@ export const useFormState = ({
   numberOfGuests,
   inviteId,
   initialGuests,
-}: UseFormStateProps) => {
+}: TUseFormStateProps) => {
   const [confirmedGuests, setConfirmedGuests] = useState<Array<TGuestInfo>>([]);
   const [formValues, setFormValues] = useState<TGuestInfo>(DEFAULT_FORM_VALUE);
   const [isAddNewOpen, setIsAddNewOpen] = useState(true);
@@ -32,6 +32,10 @@ export const useFormState = ({
   const [wasSending, setWasSending] = useState(false);
   const [isCustomPreferenceChecked, setIsCustomPreferenceChecked] =
     useState(false);
+
+  const [validationErrors, setValidationErrors] = useState<TGuestValidation>(
+    {} as TGuestValidation
+  );
 
   const isFormCompleted = useMemo(
     () => confirmedGuests.length === numberOfGuests,
@@ -63,7 +67,22 @@ export const useFormState = ({
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       const { value } = e.target;
       setFormValues((prevValues) => ({ ...prevValues, [fieldName]: value }));
+      setValidationErrors((prevErrors) => ({
+        ...prevErrors,
+        [fieldName]: true,
+      }));
     };
+
+  const handleSelectChange = (fieldName: string) => (value: string) => {
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      [fieldName]: value,
+    }));
+    setValidationErrors((prevErrors) => ({
+      ...prevErrors,
+      [fieldName]: true,
+    }));
+  };
 
   const handleConfirm = () => {
     if (confirmedGuests.length >= numberOfGuests && guestNumber < 0) {
@@ -74,6 +93,7 @@ export const useFormState = ({
       food: formValues.food === "Otra" ? customFoodPreference : formValues.food,
     };
     const validatedInfo = validateGuestInfo(updatedValues);
+    setValidationErrors(validatedInfo);
     if (isValidGuestInfo(validatedInfo)) {
       if (guestNumber < 0) {
         setConfirmedGuests((prevValues) => [...prevValues, updatedValues]);
@@ -149,6 +169,7 @@ export const useFormState = ({
     handleAddNewGuest,
     handleEdit,
     handleSubmit,
+    handleSelectChange,
     setCustomFoodPreference,
     setIsCustomPreferenceChecked,
     setFormValues,
