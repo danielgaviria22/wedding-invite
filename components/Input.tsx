@@ -7,6 +7,7 @@ type InputProps = {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   required?: boolean;
   placeholder?: string;
+  hasError?: boolean;
 };
 
 export const Input: React.FC<InputProps> = ({
@@ -16,10 +17,16 @@ export const Input: React.FC<InputProps> = ({
   onChange,
   required = false,
   placeholder,
+  hasError = false,
 }) => {
   return (
     <div className="mb-6">
-      <label className="block text-sm mb-2 text-red-main" htmlFor={label}>
+      <label
+        className={`block text-sm mb-2 ${
+          hasError ? "text-red-error" : "text-red-main"
+        }`}
+        htmlFor={label}
+      >
         {label}
       </label>
       <input

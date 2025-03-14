@@ -14,6 +14,7 @@ export default {
         red: {
           main: "#871829",
           light: "#B94A5B",
+          error: "#FC0027",
         },
         beige: "#F5E9DB",
       },

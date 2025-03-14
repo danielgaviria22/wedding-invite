@@ -8,6 +8,7 @@ type SelectProps = {
   options: { value: string; label: string }[];
   className?: string;
   required?: boolean;
+  hasError?: boolean;
 };
 
 export const Select: React.FC<SelectProps> = ({
@@ -16,6 +17,7 @@ export const Select: React.FC<SelectProps> = ({
   onChange,
   options,
   className,
+  hasError = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
@@ -49,7 +51,12 @@ export const Select: React.FC<SelectProps> = ({
       ref={selectRef}
       className={`relative mb-6 w-full max-w-3xl ${className}`}
     >
-      <label className="block text-sm mb-2 text-red-main" htmlFor={label}>
+      <label
+        className={`block text-sm mb-2 ${
+          hasError ? "text-red-error" : "text-red-main"
+        }`}
+        htmlFor={label}
+      >
         {label}
       </label>
       <div

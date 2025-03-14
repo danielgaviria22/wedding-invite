@@ -164,6 +164,7 @@ export const useFormState = ({
     isCustomPreferenceChecked,
     isFormCompleted,
     showConfirmButton,
+    validationErrors,
     handleChange,
     handleConfirm,
     handleAddNewGuest,

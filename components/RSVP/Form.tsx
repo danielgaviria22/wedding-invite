@@ -13,6 +13,7 @@ import {
 } from "@/components/RSVP/constants";
 import { Switch } from "../Switch";
 import { useFormState } from "@/hooks/useFormState";
+import { isValidGuestInfo } from "@/utils/form";
 
 type TFormProps = {
   numberOfGuests: number;
@@ -36,14 +37,15 @@ const Form: React.FC<TFormProps> = ({
     isCustomPreferenceChecked,
     isFormCompleted,
     showConfirmButton,
+    validationErrors,
     handleChange,
+    handleSelectChange,
     handleConfirm,
     handleAddNewGuest,
     handleEdit,
     handleSubmit,
     setCustomFoodPreference,
     setIsCustomPreferenceChecked,
-    setFormValues,
   } = useFormState({ numberOfGuests, inviteId, initialGuests });
 
   return (
@@ -80,6 +82,11 @@ const Form: React.FC<TFormProps> = ({
               placeholder="-"
               onChange={handleChange("name")}
               required
+              hasError={
+                validationErrors.name !== undefined
+                  ? !validationErrors.name
+                  : false
+              }
             />
             <Input
               label="Telefono"
@@ -88,6 +95,11 @@ const Form: React.FC<TFormProps> = ({
               placeholder="-"
               onChange={handleChange("phone")}
               required
+              hasError={
+                validationErrors.phone !== undefined
+                  ? !validationErrors.phone
+                  : false
+              }
             />
             <Input
               label="Email"
@@ -96,6 +108,11 @@ const Form: React.FC<TFormProps> = ({
               placeholder="-"
               onChange={handleChange("email")}
               required
+              hasError={
+                validationErrors.email !== undefined
+                  ? !validationErrors.email
+                  : false
+              }
             />
             {confirmedGuests.length > 0 && guestNumber < 0 && (
               <Switch
@@ -114,32 +131,34 @@ const Form: React.FC<TFormProps> = ({
                   <Select
                     label="Transporte al evento"
                     value={formValues.transport}
-                    onChange={(value) =>
-                      setFormValues((prevValues) => ({
-                        ...prevValues,
-                        transport: value,
-                      }))
-                    }
+                    onChange={handleSelectChange("transport")}
                     options={[
                       { value: "Por mi cuenta", label: "Por mi cuenta" },
                       { value: "Necesito Ayuda", label: "Necesito Ayuda" },
                     ]}
                     required
+                    hasError={
+                      validationErrors.transport !== undefined
+                        ? !validationErrors.transport
+                        : false
+                    }
                   />
                   <Select
                     label="Preferencias alimenticias"
                     value={formValues.food}
                     onChange={(value) => {
-                      setFormValues((prevValues) => ({
-                        ...prevValues,
-                        food: value,
-                      }));
+                      handleSelectChange("food")(value);
                       if (value === "Otra") {
                         setCustomFoodPreference("");
                       }
                     }}
                     options={FOOD_RESTRICTION}
                     required
+                    hasError={
+                      validationErrors.food !== undefined
+                        ? !validationErrors.food
+                        : false
+                    }
                   />
                   {formValues.food === "Otra" && (
                     <Input
@@ -154,14 +173,14 @@ const Form: React.FC<TFormProps> = ({
                   <Select
                     label="Preferencias de bebidas"
                     value={formValues.drink}
-                    onChange={(value) =>
-                      setFormValues((prevValues) => ({
-                        ...prevValues,
-                        drink: value,
-                      }))
-                    }
+                    onChange={handleSelectChange("drink")}
                     options={DRINK_OPTIONS}
                     required
+                    hasError={
+                      validationErrors.drink !== undefined
+                        ? !validationErrors.drink
+                        : false
+                    }
                   />
                 </>
               )}
@@ -169,7 +188,7 @@ const Form: React.FC<TFormProps> = ({
           </>
         )}
 
-        {!isFormCompleted && !isAddNewOpen && (
+        {!isFormCompleted && !isAddNewOpen && !wasSending && (
           <button
             type="button"
             className={BUTTON_OUTLINE_CLASSES}
@@ -196,6 +215,11 @@ const Form: React.FC<TFormProps> = ({
           <p className="text-center w-80 mx-auto leading-5 mb-10 italic text-sm">
             Si necesitan algún cambio en la información, pueden comunicarse con
             nosotros.
+          </p>
+        )}
+        {!isValidGuestInfo(validationErrors) && (
+          <p className="text-center w-80 mx-auto leading-5 mb-10 italic text-sm text-red-error">
+            ¡Aún hacen falta campos por llenar!
           </p>
         )}
       </form>
