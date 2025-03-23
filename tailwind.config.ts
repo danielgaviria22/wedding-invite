@@ -15,6 +15,8 @@ export default {
           main: "#871829",
           light: "#B94A5B",
           error: "#FC0027",
+          darkBg: "#5E0D19",
+          lightText: "#FAE1E5",
         },
         beige: "#F5E9DB",
       },

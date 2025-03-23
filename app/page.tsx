@@ -2,6 +2,10 @@ import { notFound } from "next/navigation";
 import { LocationMap } from "@/components/LocationMap";
 import Form from "@/components/RSVP/Form";
 import { TGuestInfo, TInviteData } from "@/types/invite.types";
+import { Title } from "@/components/Title";
+import { Separator } from "@/components/Separator";
+import { DateAndTime } from "@/components/DateAndTime";
+import { Place } from "@/components/Place";
 
 export default async function Home({
   searchParams,
@@ -42,7 +46,12 @@ export default async function Home({
   ) as Array<TGuestInfo>;
 
   return (
-    <div className="font-[family-name:var(--font-geist-sans)]">
+    <div className="font-[family-name:var(--font-geist-sans)] bg-beige">
+      <Title />
+      <Separator />
+      <DateAndTime invitationName={inviteData.invitationRecipient} />
+      <Separator rotated />
+      <Place />
       <h1>Invitación para {inviteData.invitationRecipient}</h1>
       <h2>Número de invitados: {inviteData.numberOfGuests}</h2>
       <LocationMap
