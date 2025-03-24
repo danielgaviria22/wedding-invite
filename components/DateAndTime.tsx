@@ -9,7 +9,7 @@ export const DateAndTime: React.FC<TDateAndTimeProps> = ({
   invitationName,
 }) => (
   <section className="w-full flex flex-col justify-center items-center relative bg-red-darkBg text-red-lightText pt-14 pb-20">
-    <h2 className="text-xl font-medium">{invitationName}</h2>
+    <h2 className="text-xl font-medium text-center">{invitationName}</h2>
     <p>¡Nos place invitarlos a nuestra boda!</p>
     <div className="flex flex-col justify-center items-center my-5">
       <p className="text-2xl font-medium">Octubre</p>
@@ -18,9 +18,10 @@ export const DateAndTime: React.FC<TDateAndTimeProps> = ({
       <div className="w-24 h-px bg-red-lightText mb-[3px]"></div>
       <p className="text-2xl font-medium">Sábado</p>
     </div>
+    <p className="text-xl font-semibold mb-5">Lluvia de Sobres</p>
     <p className="w-11/12 text-center">
-      Los esperamos en este día a las <span className="font-bold">3:30 pm</span>{" "}
-      para celebrar con nosotros
+      Los esperamos en este día <span className="font-bold">3:30 pm</span> para
+      celebrar con nosotros
     </p>
     <Image
       className="absolute bottom-0"

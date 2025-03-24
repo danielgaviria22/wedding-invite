@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
-import { LocationMap } from "@/components/LocationMap";
 import Form from "@/components/RSVP/Form";
 import { TGuestInfo, TInviteData } from "@/types/invite.types";
 import { Title } from "@/components/Title";
 import { Separator } from "@/components/Separator";
 import { DateAndTime } from "@/components/DateAndTime";
 import { Place } from "@/components/Place";
+import { DressCode } from "@/components/DressCode";
 
 export default async function Home({
   searchParams,
@@ -52,12 +52,18 @@ export default async function Home({
       <DateAndTime invitationName={inviteData.invitationRecipient} />
       <Separator rotated />
       <Place />
-      <h1>Invitación para {inviteData.invitationRecipient}</h1>
-      <h2>Número de invitados: {inviteData.numberOfGuests}</h2>
-      <LocationMap
-        link={process.env.NEXT_PUBLIC_LOCATION_URL || ""}
-        className="w-full h-96"
-      />
+      <div className="flex flex-col items-center px-4 text-red-main">
+        <Separator />
+        <p className="mt-8 mb-2 text-center">
+          ¡Estamos emocionado de compartir y celebrar este momento tan especial
+          con nosotros!
+        </p>
+        <p className="font-bold mb-8 text-center">
+          Recuerda, los niños se quedan en casa
+        </p>
+        <Separator rotated />
+      </div>
+      <DressCode />
       <Form
         numberOfGuests={inviteData.numberOfGuests}
         inviteId={inviteData.id}
