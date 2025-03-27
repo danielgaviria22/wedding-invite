@@ -23,7 +23,7 @@ export const Input: React.FC<InputProps> = ({
     <div className="mb-6">
       <label
         className={`block text-sm mb-2 ${
-          hasError ? "text-red-error" : "text-red-main"
+          hasError ? "text-red-error" : "text-blue-light"
         }`}
         htmlFor={label}
       >
@@ -36,7 +36,11 @@ export const Input: React.FC<InputProps> = ({
         onChange={onChange}
         required={required}
         placeholder={placeholder}
-        className="w-full bg-transparent border-b p-2 border-red-main text-red-main focus:outline-none placeholder:text-red-main"
+        className={`w-full bg-transparent border-b p-2 focus:outline-none placeholder:text-blue-light ${
+          hasError
+            ? "border-red-error text-red-error placeholder:text-red-error"
+            : "border-blue-light text-blue-light placeholder:text-blue-light"
+        }`}
       />
     </div>
   );

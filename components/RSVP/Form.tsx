@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { Input } from "../Input";
 import { Select } from "../Select";
 import { ConfirmedCard } from "./ConfirmedCard";
@@ -49,11 +50,8 @@ const Form: React.FC<TFormProps> = ({
   } = useFormState({ numberOfGuests, inviteId, initialGuests });
 
   return (
-    <section className="flex justify-center bg-beige w-full text-red-main">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-3xl px-10 pt-20 pb-60"
-      >
+    <section className="flex justify-center bg-blue-darkest w-full text-blue-light">
+      <form onSubmit={handleSubmit} className="w-full max-w-3xl px-10 py-8">
         <h2 className="text-2xl text-center w-80 leading-5 mx-auto mb-10">
           {wasSending
             ? "¡Gracias por confirmar tu asistencia!"
@@ -191,10 +189,11 @@ const Form: React.FC<TFormProps> = ({
         {!isFormCompleted && !isAddNewOpen && !wasSending && (
           <button
             type="button"
-            className={BUTTON_OUTLINE_CLASSES}
+            className={`${BUTTON_OUTLINE_CLASSES} flex justify-between`}
             onClick={handleAddNewGuest}
           >
-            Añadir otro invitado
+            <p>Añadir otro invitado</p>
+            <Image src="./icons/add.svg" alt="+" width={24} height={24} />
           </button>
         )}
         {showConfirmButton && (

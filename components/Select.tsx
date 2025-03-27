@@ -53,14 +53,18 @@ export const Select: React.FC<SelectProps> = ({
     >
       <label
         className={`block text-sm mb-2 ${
-          hasError ? "text-red-error" : "text-red-main"
+          hasError ? "text-red-error" : "text-blue-light"
         }`}
         htmlFor={label}
       >
         {label}
       </label>
       <div
-        className="text-red-main border-b border-red-main cursor-pointer p-2"
+        className={`border-b cursor-pointer p-2 ${
+          hasError
+            ? "border-red-error text-red-error"
+            : "border-blue-light text-blue-light"
+        }`}
         onClick={toggleDropdown}
       >
         <span>{value || "No seleccionado"}</span>
@@ -79,11 +83,11 @@ export const Select: React.FC<SelectProps> = ({
         </span>
       </div>
       {isOpen && (
-        <div className="absolute z-10 w-full max-h-96 overflow-y-auto bg-beige text-red-main border-t border-r-2 border-b-2 border-l border-red-main shadow-lg mt-1">
+        <div className="absolute z-10 w-full max-h-96 overflow-y-auto bg-blue-darkest text-blue-light border-t border-r-2 border-b-2 border-l border-blue-light shadow-lg mt-1">
           {options.map((option) => (
             <div
               key={option.value}
-              className="py-2 px-4 hover:bg-gray-200 cursor-pointer border-b border-red-main last:border-0"
+              className="py-2 px-4 hover:bg-blue-950 cursor-pointer border-b border-blue-light last:border-0"
               onClick={() => handleOptionClick(option.value)}
             >
               {option.label}

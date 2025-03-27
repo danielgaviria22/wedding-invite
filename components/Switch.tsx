@@ -21,17 +21,19 @@ export const Switch: React.FC<SwitchProps> = ({
       aria-pressed={isChecked}
     >
       <div
-        className={`w-10 h-6 flex items-center rounded-full p-1 transition-all border border-red-main ${
-          isChecked ? "bg-red-main" : "bg-beige"
+        className={`w-10 h-6 flex items-center rounded-full p-1 transition-all border border-blue-light ${
+          isChecked ? "bg-blue-light" : "bg-blue-darkest"
         }`}
       >
         <div
           className={`w-4 h-4 rounded-full shadow-md transform transition-all ${
-            isChecked ? "translate-x-4 bg-beige" : "translate-x-0 bg-red-main"
+            isChecked
+              ? "translate-x-4 bg-blue-darkest"
+              : "translate-x-0 bg-blue-light"
           }`}
         />
       </div>
-      <span className="ml-3 text-red-main">{children}</span>
+      <span className="ml-3 text-blue-light">{children}</span>
     </div>
   );
 };

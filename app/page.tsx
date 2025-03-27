@@ -64,11 +64,13 @@ export default async function Home({
         <Separator rotated />
       </div>
       <DressCode />
+      <Separator />
       <Form
         numberOfGuests={inviteData.numberOfGuests}
         inviteId={inviteData.id}
         initialGuests={confirmedGuests}
       />
+      <Separator />
     </div>
   );
 }
