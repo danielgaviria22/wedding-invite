@@ -10,7 +10,7 @@ export const DressCode = () => (
       src="./images/dressCode.svg"
       alt="colores reservados"
       width={361}
-      height={56}
+      height={59}
     />
     <p className="mb-6 font-semibold">Azul, Rojo, Vinotinto y Blanco</p>
   </section>
