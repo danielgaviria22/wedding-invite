@@ -21,3 +21,11 @@ export type TGuestValidation = {
   food: boolean;
   drink: boolean;
 };
+
+export type TTimeLeft = {
+  months: number;
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+};

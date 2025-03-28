@@ -6,6 +6,7 @@ import { Separator } from "@/components/Separator";
 import { DateAndTime } from "@/components/DateAndTime";
 import { Place } from "@/components/Place";
 import { DressCode } from "@/components/DressCode";
+import { CountdownTimer } from "@/components/CountdownTimer";
 
 export default async function Home({
   searchParams,
@@ -45,6 +46,8 @@ export default async function Home({
     })
   ) as Array<TGuestInfo>;
 
+  const weddingDate = new Date("2025-10-25T15:30:00");
+
   return (
     <div className="font-[family-name:var(--font-geist-sans)] bg-beige">
       <Title />
@@ -71,6 +74,8 @@ export default async function Home({
         initialGuests={confirmedGuests}
       />
       <Separator />
+      <CountdownTimer targetDate={weddingDate} />
+      <Separator rotated />
     </div>
   );
 }
