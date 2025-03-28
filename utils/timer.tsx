@@ -4,8 +4,6 @@ export const calculateTimeLeft = (targetDate: Date): TTimeLeft => {
   const now = new Date();
   const difference = +targetDate - +now;
 
-  console.log(targetDate);
-
   let timeLeft: TTimeLeft = {
     months: 0,
     days: 0,
