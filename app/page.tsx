@@ -46,7 +46,7 @@ export default async function Home({
     })
   ) as Array<TGuestInfo>;
 
-  const weddingDate = new Date("2025-10-25T15:30:00");
+  const weddingDate = new Date("2025-10-25T20:30:00");
 
   return (
     <div className="font-[family-name:var(--font-geist-sans)] bg-beige">
