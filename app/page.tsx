@@ -7,6 +7,7 @@ import { DateAndTime } from "@/components/DateAndTime";
 import { Place } from "@/components/Place";
 import { DressCode } from "@/components/DressCode";
 import { CountdownTimer } from "@/components/CountdownTimer";
+import { FadeInSection } from "@/components/FadeInSection";
 
 export default async function Home({
   searchParams,
@@ -54,8 +55,30 @@ export default async function Home({
       <Separator />
       <DateAndTime invitationName={inviteData.invitationRecipient} />
       <Separator rotated />
-      <Place />
-      <div className="flex flex-col items-center px-4 text-red-main">
+      <div className="flex flex-col lg:flex-row lg:gap-10 lg:items-start">
+        <Place />
+        <div className="hidden lg:flex h-[548px] w-px bg-red-main"></div>
+        <FadeInSection className="flex flex-col lg:hidden items-center px-4 text-red-main">
+          <Separator />
+          <p className="mt-8 mb-2 text-center">
+            ¡Estamos emocionado de compartir y celebrar este momento tan
+            especial con nosotros!
+          </p>
+          <p className="font-bold mb-8 text-center">
+            Recuerda, los niños se quedan en casa
+          </p>
+          <Separator rotated />
+        </FadeInSection>
+        <DressCode />
+      </div>
+      <Separator />
+      <Form
+        numberOfGuests={inviteData.numberOfGuests}
+        inviteId={inviteData.id}
+        initialGuests={confirmedGuests}
+      />
+      <Separator />
+      <div className="hidden flex-col lg:flex items-center text-red-main max-w-2xl mx-auto mt-10">
         <Separator />
         <p className="mt-8 mb-2 text-center">
           ¡Estamos emocionado de compartir y celebrar este momento tan especial
@@ -66,14 +89,6 @@ export default async function Home({
         </p>
         <Separator rotated />
       </div>
-      <DressCode />
-      <Separator />
-      <Form
-        numberOfGuests={inviteData.numberOfGuests}
-        inviteId={inviteData.id}
-        initialGuests={confirmedGuests}
-      />
-      <Separator />
       <CountdownTimer targetDate={weddingDate} />
       <Separator rotated />
     </div>

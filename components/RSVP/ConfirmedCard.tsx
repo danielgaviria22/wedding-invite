@@ -15,7 +15,7 @@ export const ConfirmedCard: React.FC<TConfirmedCardProps> = ({
 }) => {
   const { name, email, phone, transport, food, drink } = guestInfo;
   return (
-    <article className="relative border border-blue-light p-1 mb-8">
+    <article className="relative border border-blue-light p-1 mb-8 min-w-60 lg:mb-0">
       <div className="border-[0.5px] border-blue-light p-2">
         <h4 className="font-medium px-2">{name}</h4>
         <p className="font-light text-xs px-2">
