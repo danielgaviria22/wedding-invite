@@ -1,6 +1,6 @@
 export const FOOD_RESTRICTION = [
   { value: "Ninguna", label: "Ninguna" },
-  { value: "Vegano", label: "Vegeno" },
+  { value: "Vegano", label: "Vegano" },
   { value: "Vegetariano", label: "Vegetariano" },
   { value: "Otra", label: "Otra" },
 ];
