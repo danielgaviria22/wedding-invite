@@ -11,6 +11,11 @@ export const DressCode = () => (
       <p className="mb-6">Traje completo o Vestido tipo cóctel</p>
     </FadeInSection>
     <FadeInSection>
+      <p className="mb-6 font-semibold text-center">
+        Usar colores diferentes a: Rojo, Vinotinto, Azul y Blanco
+      </p>
+    </FadeInSection>
+    <FadeInSection>
       <Image
         className="mb-6"
         src="./images/dressCode.svg"
@@ -18,9 +23,6 @@ export const DressCode = () => (
         width={361}
         height={59}
       />
-    </FadeInSection>
-    <FadeInSection>
-      <p className="mb-6 font-semibold">Azul, Rojo, Vinotinto y Blanco</p>
     </FadeInSection>
   </section>
 );
