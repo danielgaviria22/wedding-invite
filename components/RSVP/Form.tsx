@@ -51,7 +51,7 @@ const Form: React.FC<TFormProps> = ({
   } = useFormState({ numberOfGuests, inviteId, initialGuests });
 
   return (
-    <section className="flex justify-center bg-blue-darkest w-full text-blue-light">
+    <section className="relative z-10 flex justify-center bg-blue-darkest w-full text-blue-light">
       <FadeInSection className="w-full flex justify-center">
         <form onSubmit={handleSubmit} className="w-full max-w-3xl px-10 py-8">
           <h2 className="text-2xl text-center w-80 leading-5 mx-auto mb-10">
