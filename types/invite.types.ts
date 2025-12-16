@@ -29,3 +29,13 @@ export type TTimeLeft = {
   minutes: number;
   seconds: number;
 };
+
+export type TEventData = {
+  id: string;
+  name: string;
+  date: Date;
+  place: string;
+  googleMaps: string;
+  dressCode?: string;
+  templateId?: string;
+};
